@@ -1,0 +1,8 @@
+.
+objs/
+obj/
+# libft/
+pipex
+libft/libft.a
+outfile
+pipex_tester/

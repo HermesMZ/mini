@@ -1,0 +1,248 @@
+🧠 Fonctions liées à readline (édition de ligne en terminal)
+
+    readline : lit une ligne de texte avec édition et historique.
+
+    add_history : ajoute une ligne à l’historique.
+
+    rl_clear_history : efface l’historique.
+
+    rl_on_new_line : informe readline qu’une nouvelle ligne commence.
+
+    rl_replace_line : remplace la ligne courante dans le buffer de readline.
+
+    rl_redisplay : réaffiche la ligne en cours.
+
+🖨️ Fonctions d'entrée/sortie
+
+    printf : affiche du texte formaté sur la sortie standard.
+
+    write : écrit des données dans un fichier ou un descripteur.
+
+    read : lit des données depuis un fichier ou un descripteur.
+
+🧠 Gestion mémoire
+
+    malloc : alloue dynamiquement de la mémoire.
+
+    free : libère la mémoire allouée.
+
+📁 Fonctions fichiers et répertoires
+
+    access : vérifie l’accès à un fichier.
+
+    open : ouvre un fichier.
+
+    close : ferme un fichier.
+
+    unlink : supprime un fichier.
+
+    stat / lstat / fstat : récupèrent les métadonnées d’un fichier.
+
+    opendir / readdir / closedir : ouvrent, lisent et ferment un répertoire.
+
+👨‍👧‍👦 Processus
+
+    fork : crée un processus fils.
+
+    wait / waitpid / wait3 / wait4 : attend la fin d’un processus.
+
+    execve : exécute un programme (remplace le processus courant).
+
+    exit : termine un processus.
+
+    kill : envoie un signal à un processus.
+
+🔔 Signaux
+
+    signal : installe un gestionnaire de signal.
+
+    sigaction : version plus avancée de signal.
+
+    sigemptyset / sigaddset : manipulent des ensembles de signaux.
+
+🔁 Redirections et pipes
+
+    dup / dup2 : dupliquent des descripteurs de fichiers.
+
+    pipe : crée un tube (pipe) anonyme pour la communication entre processus.
+
+📂 Environnement et terminal
+
+🔹 getcwd
+
+    Prototype : 
+char *getcwd(char *buf, size_t size);
+
+    But : Récupère le chemin absolu du répertoire de travail courant.
+
+    Exemple :
+
+char cwd[1024];
+getcwd(cwd, sizeof(cwd));
+printf("Répertoire courant : %s\n", cwd);
+
+🔹 chdir
+
+    Prototype : 
+int chdir(const char *path);
+
+    But : Change le répertoire de travail courant du processus.
+
+    Exemple :
+
+chdir("/tmp");
+
+🔹 isatty
+
+    Prototype : 
+int isatty(int fd);
+
+    But : Vérifie si un descripteur de fichier correspond à un terminal.
+
+    Retourne : 1 si c'est un terminal, 0 sinon.
+
+    Exemple :
+
+if (isatty(STDIN_FILENO)) printf("Entrée standard est un terminal.\n");
+
+🔹 ttyname
+
+    Prototype : 
+char *ttyname(int fd);
+
+    But : Renvoie le nom du terminal associé au descripteur fd.
+
+    Exemple :
+
+printf("Terminal : %s\n", ttyname(STDIN_FILENO));
+
+🔹 ttyslot
+
+    Prototype : 
+int ttyslot(void);
+
+    But : Renvoie l'index de la ligne de terminal utilisée par le processus.
+
+    Utilité : Rarement utilisé directement, parfois en logging système.
+
+🔹 ioctl
+
+    Prototype : 
+int ioctl(int fd, unsigned long request, ...);
+
+    But : Interface générique pour manipuler les périphériques via des commandes spécifiques.
+
+    Exemple courant : interagir avec les paramètres du terminal.
+
+🔹 getenv
+
+    Prototype : 
+char *getenv(const char *name);
+
+    But : Récupère la valeur d'une variable d'environnement.
+
+    Exemple :
+
+printf("HOME = %s\n", getenv("HOME"));
+
+🔹 tcgetattr / tcsetattr
+
+    Prototype :
+
+int tcgetattr(int fd, struct termios *termios_p);
+int tcsetattr(int fd, int optional_actions, const struct termios *termios_p);
+
+	But : Récupère (tcgetattr) ou modifie (tcsetattr) les attributs du terminal (mode canonique, echo, etc.).
+
+	Utilité : gestion fine des entrées clavier (désactiver echo, mode non-canonique).
+
+	Exemple :
+
+struct termios oldt, newt;
+tcgetattr(STDIN_FILENO, &oldt);
+newt = oldt;
+newt.c_lflag &= ~(ICANON | ECHO); // désactiver echo et canonique
+tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+
+🎨 Termcap (gestion du terminal)
+La bibliothèque termcap permet de gérer les capacités des terminaux de manière portable. Utile pour des interfaces texte avancées.
+🔹 tgetent
+
+    Prototype : 
+int tgetent(char *bp, const char *name);
+
+    But : Charge l'entrée du terminal (ex : "xterm") depuis la base termcap.
+
+    Exemple :
+
+char term_buffer[2048];
+tgetent(term_buffer, getenv("TERM"));
+
+🔹 tgetflag
+
+    Prototype : 
+int tgetflag(const char *id);
+
+    But : Vérifie la présence d'une capacité booléenne (ex: "am" pour auto-margin).
+
+    Exemple :
+
+int has_auto_margin = tgetflag("am");
+
+🔹 tgetnum
+
+    Prototype : 
+int tgetnum(const char *id);
+
+    But : Récupère une capacité numérique du terminal (ex: "co" pour colonnes).
+
+    Exemple :
+
+int columns = tgetnum("co");
+
+🔹 tgetstr
+
+    Prototype : 
+char *tgetstr(const char *id, char **area);
+
+    But : Récupère une capacité chaîne (ex: "cl" pour clear screen).
+
+    Exemple :
+
+char *area = malloc(2048);
+char *clear = tgetstr("cl", &area);
+tputs(clear, 1, putchar);
+
+🔹 tgoto
+
+    Prototype : 
+char *tgoto(const char *cm, int destcol, int destline);
+
+    But : Prépare une séquence de déplacement du curseur.
+
+    Utilisé avec : tgetstr("cm", ...)
+
+    Exemple :
+
+char *cm = tgetstr("cm", &area);
+char *move = tgoto(cm, 10, 5); // x=10, y=5
+tputs(move, 1, putchar);
+
+🔹 tputs
+
+    Prototype : 
+int tputs(const char *str, int affcnt, int (*putc)(int));
+
+    But : Affiche une chaîne de contrôle terminal, avec gestion du padding.
+
+    Exemple :
+
+tputs(clear, 1, putchar);
+
+
+⚠️ Gestion d’erreurs
+
+    strerror : donne le message d’erreur associé à un code.
+
+    perror : affiche un message d’erreur lié à errno.

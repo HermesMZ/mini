@@ -1,0 +1,43 @@
+# Suppression des erreurs de readline
+{
+   readline_leak
+   Memcheck:Leak
+   ...
+   fun:readline
+}
+
+{
+   readline_still_reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*/libreadline.so*
+}
+
+{
+   readline_history
+   Memcheck:Leak
+   ...
+   fun:add_history
+}
+
+{
+   readline_completion
+   Memcheck:Leak
+   ...
+   fun:rl_*
+}
+
+{
+   readline_conditional_uninit
+   Memcheck:Cond
+   ...
+   obj:*/libreadline.so*
+}
+
+{
+   readline_value_uninit
+   Memcheck:Value8
+   ...
+   obj:*/libreadline.so*
+}
