@@ -6,110 +6,87 @@
 /*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 11:30:09 by mzimeris          #+#    #+#             */
-/*   Updated: 2025/08/13 14:17:51 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/13 17:34:07 by mzimeris         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "m_minishell.h"
 
-void	remove_env_node(t_env *env, t_env *node)
+t_env	*create_env_node_only(char *key, char *value)
 {
-	t_env	*current;
-	t_env	*prev_node;
+	t_env	*new_node;
 
-	if (!env || !node)
-		return ;
-	if (env == node)
-	{
-		*env = node->next;
-		del_env_node(node);
-		return ;
-	}
-	current = *env;
-	prev_node = NULL;
-	while (current && current != node)
-	{
-		prev_node = current;
-		current = current->next;
-	}
-	if (current == node)
-	{
-		prev_node->next = current->next;
-		del_env_node(node);
-	}
+	if (!key)
+		return (NULL);
+	new_node = malloc(sizeof(t_env));
+	if (!new_node)
+		return (NULL);
+	new_node->key = ft_strdup(key, ft_strlen(key), 0);
+	if (value)
+		new_node->value = ft_strdup(value, ft_strlen(value), 0);
+	else
+		new_node->value = NULL;
+	new_node->next = NULL;
+	return (new_node);
 }
 
-static void	del_env_node(t_env *node)
+void	create_env_node(t_env **env, char *key, char *value)
 {
-	if (!node)
-		return ;
-	free(node->key);
-	free(node->value);
-	free(node);
+	t_env	*new_node;
+
+	new_node = create_env_node_only(key, value);
+	if (new_node)
+		add_env_node(env, new_node);
 }
 
-void	clear_env(t_env *env)
-{
-	t_env	*tmp;
-
-	while (env)
-	{
-		tmp = env;
-		env = env->next;
-		del_env_node(tmp);
-	}
-}
-
-static void	add_env_node(t_env *env, t_env *new)
+void	add_env_node(t_env **env, t_env *new)
 {
 	t_env	*last;
 
 	if (!env || !new)
 		return ;
-	if (env == NULL)
+	if (*env == NULL)
 	{
-		env = new;
+		*env = new;
 		return ;
 	}
-	last = env;
+	last = *env;
 	while (last->next)
 		last = last->next;
 	last->next = new;
 }
 
-
-static t_env	*create_env_node(char *line)
+static t_env	*extract_env_node(char *line)
 {
-	t_env	*new_node;
-	char	*key;
-	char	*value;
-	char	*kval;
+	char	**kval;
+	t_env	*node;
 
 	kval = ft_split(line, '=');
-	key = kval[0];
-	value = kval[1];
-	free(kval);
-	new_node = malloc(sizeof(t_env));
-	if (!new_node)
+	if (!kval || !kval[0])
+	{
+		if (kval)
+			free_splitted(kval);
 		return (NULL);
-	new_node->key = key;
-	new_node->value = value;
-	new_node->next = NULL;
-	return (new_node);
+	}
+	node = create_env_node_only(kval[0], kval[1]);
+	free_splitted(kval);
+	return (node);
 }
 
-t_env	*extract_env(char **envp)
+t_env	*extract_env(char **envp, t_env **env)
 {
-	t_env	*new;
+	char	*line;
 
-	new = NULL;
+	line = NULL;
 	if (!envp || !*envp)
-		return (new);
+		return (NULL);
 	while (*envp)
 	{
-		add_env_node(&new, create_env_node(ft_strdup(*envp,
-					ft_strlen(*envp), 0)));
+		line = ft_strdup(*envp, ft_strlen(*envp), 0);
+		add_env_node(env, extract_env_node(line));
+		free(line);
+		line = NULL;
 		envp++;
 	}
-	return (new);
+	return (*env);
 }

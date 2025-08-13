@@ -56,28 +56,28 @@ typedef struct s_token_data
 	int				len;
 }	t_token_data;
 
-typedef struct s_redirect 
+typedef struct s_redirect
 {
-    t_token_type		type;
-    char				*filename;
-    struct s_redirect	*next;
-}   t_redirect;
+	t_token_type		type;
+	char				*filename;
+	struct s_redirect	*next;
+}	t_redirect;
 
 typedef struct s_command
 {
-    t_token				*cmd;           // ls, grep, etc...
-    t_token				**args;        // -a, -e etc...
-    t_redirect			*redirects;     // liste des redirections
-    int					pipe_out;       // 1 si il y a une pipe après la commande sinon 0
-    struct s_command	*next;
-} t_command;
+	t_token				*cmd;
+	t_token				**args;
+	t_redirect			*redirects;
+	int					pipe_out;
+	struct s_command	*next;
+}	t_command;
 
 typedef enum e_parsing_state
 {
-    EXPECTING_CMD,
-    EXPECTING_CMD_OR_ARG,
-    EXPECTING_FILE
-} t_parsing_state;
+	EXPECTING_CMD,
+	EXPECTING_CMD_OR_ARG,
+	EXPECTING_FILE
+}	t_parsing_state;
 
 //test
 char	*get_token_type_str(t_token_type type);

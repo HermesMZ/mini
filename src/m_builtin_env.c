@@ -6,72 +6,124 @@
 /*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 11:48:41 by zoum              #+#    #+#             */
-/*   Updated: 2025/08/13 14:05:19 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/13 17:32:31 by mzimeris         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "m_minishell.h"
+#include <string.h>
 
-// liste chainee pour les variables d'environnement
-int	handle_export(t_env *env, char *key, char *value)
+static void	parse_export_arg(t_command *command, char **key, char **value,
+		char ***kval)
 {
-	t_env	*new_env;
-	t_env	*current;
+	*key = NULL;
+	*value = NULL;
+	*kval = NULL;
 
-	if (!key || !value || !env)
-		return (0);
-	new_env = malloc(sizeof(t_env));
-	if (!new_env)
-		return (-1);
-	new_env->key = ft_strdup(key, ft_strlen(key), 0);
-	new_env->value = ft_strdup(value, ft_strlen(value), 0);
-	new_env->next = NULL;
-
-	current = env;
-	while (current->next && ft_strcmp(current->next->key, key) != 0)
-		current = current->next;
-		current->next = new_env;
-	return (0);
+	if (command && command->args && command->args[0]
+		&& command->args[0]->string)
+	{
+		if (strchr(command->args[0]->string, '='))
+		{
+			*kval = ft_split(command->args[0]->string, '=');
+			if (*kval && (*kval)[0])
+			{
+				*key = (*kval)[0];
+				*value = (*kval)[1];
+			}
+		}
+		else
+		{
+			*key = command->args[0]->string;
+		}
+	}
 }
-	// free current->next if it exists
 
-int	handle_unset(t_env *env, char *key)
+static int	update_existing_var(t_env **env, char *key, char *value,
+		char **kval)
 {
 	t_env	*current;
-	t_env	*prev;
 
-	if (!key || !env)
-		return (0);
-	current = env;
-	prev = NULL;
+	current = *env;
 	while (current)
 	{
 		if (ft_strcmp(current->key, key) == 0)
 		{
-			if (prev)
-				prev->next = current->next;
-			else
-				env = current->next;
-			free(current->key);
-			free(current->value);
-			free(current);
-			return (0);
+			if (value)
+			{
+				free(current->value);
+				current->value = ft_strdup(value, ft_strlen(value), 0);
+			}
+			if (kval)
+				free_splitted(kval);
+			return (1);
 		}
-		prev = current;
 		current = current->next;
 	}
 	return (0);
 }
 
-int	handle_env(char **envp)
+int	handle_export(t_env **env, t_command *command)
 {
-	int	i;
+	char	*key;
+	char	*value;
+	char	**kval;
 
-	i = 0;
-	while (envp[i])
+	if (!env)
+		return (0);
+	parse_export_arg(command, &key, &value, &kval);
+	if (!key)
 	{
-		printf("%s\n", envp[i]);
-		i++;
+		if (kval)
+			free_splitted(kval);
+		return (print_export(env));
+	}
+	if (update_existing_var(env, key, value, kval))
+		return (0);
+	create_env_node(env, key, value);
+	if (kval)
+		free_splitted(kval);
+	return (0);
+}
+
+int	handle_unset(t_env **env, t_command *command)
+{
+	t_env	*current;
+	char	*key;
+
+	if (!env || !*env)
+		return (0);
+	key = NULL;
+	if (command && command->args && command->args[0]
+		&& command->args[0]->string)
+			key = command->args[0]->string;
+	if (!key)
+		return (0);
+	current = *env;
+	while (current)
+	{
+		if (ft_strcmp(current->key, key) == 0)
+		{
+			remove_env_node(env, current);
+			return (0);
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
+int	handle_env(t_env *env)
+{
+	t_env	*current;
+
+	current = env;
+	while (current)
+	{
+		if (current->value)
+			printf("%s=%s\n", current->key, current->value);
+		else
+			printf("%s=\n", current->key);
+		current = current->next;
 	}
 	return (0);
 }

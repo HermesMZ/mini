@@ -76,7 +76,10 @@ int main(int argc, char *argv[], char **envp)
 	char 		*next_line;
 	char		*joined;
 	t_command	*cmd;
+	t_env		*env;
 
+	env = NULL;
+	env = extract_env(envp, &env);
 	// pour éviter l’avertissement de variable non utilisée
     (void)argc;
     (void)argv;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[], char **envp)
 		input = readline("minishell$ ");
 		if (!input)
 		{
-			write(1, "exit\n", 5);
+			// write(1, "exit\n", 5);
 			break;
 		}
 			if (has_leading_pipe(input) || is_redirection_syntax_valid(input))
@@ -137,12 +140,14 @@ int main(int argc, char *argv[], char **envp)
 			}
 			test_parsing(token);
 			cmd = parse_tokens(token);
-			exec(cmd, envp);
+			exec(cmd, &env, &token);
 			add_history(input);
 			if (input)
 				free(input);
 			if (token)
 				ft_tokenlstclear(&token);
 		}
+		clear_env(&env);
+
 		return (0);
 	}
