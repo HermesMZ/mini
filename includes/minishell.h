@@ -80,13 +80,13 @@ typedef enum e_parsing_state
 }	t_parsing_state;
 
 //test
-char	*get_token_type_str(t_token_type type);
-char	*get_quote_type_str(t_quote_type quote);
-char	*get_redirect_type_str(t_token_type type);
-void	print_redirections(t_redirect *redirects);
-void	print_token_arguments(t_token **args);
-void	print_command_details(t_command *cmd, int cmd_count);
-void	test_parsing(t_token *token);
+char		*get_token_type_str(t_token_type type);
+char		*get_quote_type_str(t_quote_type quote);
+char		*get_redirect_type_str(t_token_type type);
+void		print_redirections(t_redirect *redirects);
+void		print_token_arguments(t_token **args);
+void		print_command_details(t_command *cmd, int cmd_count);
+void		test_parsing(t_token *token);
 
 //fonction minishell
 void		handle_sigint(int signum);
@@ -112,12 +112,31 @@ void		free_command_chain(t_command **command);
 void		free_command(t_command *cmd);
 int			add_argument(t_command *current_command, t_token *token);
 t_command	*parse_tokens(t_token *token);
-t_command	*handle_parsing_error(t_command **commands, t_command *current_command);
+t_command	*handle_parsing_error(t_command **commands,
+				t_command *current_command);
 int			is_redirection_token(t_token_type type);
 int			add_redir(t_command *cmd, t_token_type type, char *filename);
-void		add_redirect_to_list(t_redirect **redirects, t_redirect *new_redirect);
+void		add_redirect_to_list(t_redirect **redirects,
+				t_redirect *new_redirect);
 t_redirect	*create_redirection(t_token_type type, char *filename);
 char		*get_token_symbol(t_token_type type);
+int			handle_word_token(t_parsing_state *state, t_command **current_cmd,
+				t_token *token, t_command **commands);
+int			handle_word_expecting_file(t_parsing_state *state,
+				t_command **current_cmd, t_token *token);
+int			handle_word_expecting_arg(t_parsing_state *state,
+				t_command **current_cmd, t_token *token, t_command **commands);
+int			handle_word_expecting_cmd(t_parsing_state *state,
+				t_command **current_cmd, t_token *token, t_command **commands);
+t_command	*handle_parsing_error(t_command **cmd,
+				t_command *current_command);
+int			is_redirection_token(t_token_type type);
+int			handle_redirection_token(t_parsing_state *state,
+				t_command **current_cmd);
+int			handle_pipe_token(t_parsing_state *state, t_command **current_cmd,
+				t_command **commands, t_token *token);
+int			process_single_token(t_token *token, t_parsing_state *state,
+				t_command **current_cmd, t_command **commands);
 
 // lib
 char		*ft_strdup(const char *s, int len_s, int i);

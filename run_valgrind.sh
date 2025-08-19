@@ -9,4 +9,6 @@ valgrind --suppressions=.valgrind_suppress \
          --leak-check=full \
          --show-leak-kinds=all \
          --track-origins=yes \
+         --trace-children=yes \
+         --track-fds=yes \
          ./minishell

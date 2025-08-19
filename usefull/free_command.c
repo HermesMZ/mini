@@ -18,13 +18,8 @@ void	free_redirections(t_redirect *redirects)
 
 void	free_token_array(t_token **args)
 {
-	int	i;
-
 	if (!args)
 		return ;
-	i = 0;
-	while (args[i])
-		i++;
 	free(args);
 }
 

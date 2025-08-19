@@ -12,25 +12,7 @@
 
 #include "m_minishell.h"
 
-int	print_export(t_env **env)
-{
-	t_env	*current;
-
-	if (!env || !*env)
-		return (0);
-	current = *env;
-	while (current)
-	{
-		if (current->value)
-			printf("declare -x %s=\"%s\"\n", current->key, current->value);
-		else
-			printf("declare -x %s\n", current->key);
-		current = current->next;
-	}
-	return (0);
-}
-
-static void	del_env_node(t_env *node)
+static void	del_env_node(t_env_node *node)
 {
 	if (!node)
 		return ;
@@ -39,20 +21,20 @@ static void	del_env_node(t_env *node)
 	free(node);
 }
 
-void	remove_env_node(t_env **env, t_env *node)
+void	remove_env_node(t_env **env, t_env_node *node)
 {
-	t_env	*current;
-	t_env	*prev_node;
+	t_env_node	*current;
+	t_env_node	*prev_node;
 
-	if (!env || !node)
+	if (!env || !*env || !node)
 		return ;
-	if (ft_strcmp((*env)->key, node->key) == 0)
+	current = (*env)->env_list;
+	if (current && ft_strcmp(current->key, node->key) == 0)
 	{
-		*env = node->next;
-		del_env_node(node);
+		(*env)->env_list = current->next;
+		del_env_node(current);
 		return ;
 	}
-	current = *env;
 	prev_node = NULL;
 	while (current && ft_strcmp(current->key, node->key) != 0)
 	{
@@ -62,18 +44,42 @@ void	remove_env_node(t_env **env, t_env *node)
 	if (current && ft_strcmp(current->key, node->key) == 0)
 	{
 		prev_node->next = current->next;
-		del_env_node(node);
+		del_env_node(current);
 	}
 }
 
 void	clear_env(t_env **env)
 {
-	t_env	*tmp;
+	t_env_node	*current;
+	t_env_node	*tmp;
 
-	while (*env)
+	if (!env || !*env)
+		return ;
+	current = (*env)->env_list;
+	while (current)
 	{
-		tmp = *env;
-		*env = (*env)->next;
+		tmp = current;
+		current = current->next;
 		del_env_node(tmp);
 	}
+	if ((*env)->path)
+		free_splitted((*env)->path);
+	free(*env);
+	*env = NULL;
+}
+
+t_env_node	*get_env(t_env *env, const char *key)
+{
+	t_env_node	*current;
+
+	if (!env || !key)
+		return (NULL);
+	current = env->env_list;
+	while (current)
+	{
+		if (ft_strcmp(current->key, key) == 0)
+			return (current);
+		current = current->next;
+	}
+	return (NULL);
 }

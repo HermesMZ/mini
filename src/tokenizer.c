@@ -1,26 +1,26 @@
 #include "../includes/minishell.h"
 
-int	tokenizer(char *input, t_token **token, int i)
+int	tokenizer(char *inp, t_token **token, int i)
 {
 	int	start;
 	int	ret;
 
-	while (input[i])
+	while (inp[i])
 	{
-		while (input [i] && (input[i] == ' ' || input[i] == '\n' || input[i] == '\t'))
+		while (inp [i] && (inp[i] == ' ' || inp[i] == '\n' || inp[i] == '\t'))
 			i++;
 		start = i;
-		while (input[i] && !is_special_char(input[i]) &&
-			input[i] != ' ' && input[i] != '\n' && input[i] != '\t')
+		while (inp[i] && !is_special_char(inp[i])
+			&& inp[i] != ' ' && inp[i] != '\n' && inp[i] != '\t')
 			i++;
 		if (i > start)
 		{
-			if (!add_new_token_word(start, i, token, input))
+			if (!add_new_token_word(start, i, token, inp))
 				return (ft_tokenlstclear(token), 0);
 		}
-		if (input[i] && is_special_char(input[i]))
+		if (inp[i] && is_special_char(inp[i]))
 		{
-			ret = is_char_symbol(input, token, i);
+			ret = is_char_symbol(inp, token, i);
 			if (ret == 0)
 				return (ft_tokenlstclear(token), 0);
 			i += ret;

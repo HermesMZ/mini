@@ -55,6 +55,7 @@ int	is_greater_than_symbol(t_token **token, char *input, int i)
 	}
 	return (0);
 }
+
 int	is_single_quote(t_token **token, char *input, int i)
 {
 	t_token_data	data;

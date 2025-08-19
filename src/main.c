@@ -78,14 +78,15 @@ int main(int argc, char *argv[], char **envp)
 	t_command	*cmd;
 	t_env		*env;
 
+	cmd = NULL;
 	env = NULL;
 	env = extract_env(envp, &env);
+	// debug_print_env(env);
 	// pour éviter l’avertissement de variable non utilisée
     (void)argc;
     (void)argv;
 
 	token = NULL;
-	cmd = NULL;
     signal(SIGINT, handle_sigint); // gère ctrl-c
     signal(SIGQUIT, SIG_IGN); // gère ctrl-/
     while (1)
@@ -140,14 +141,22 @@ int main(int argc, char *argv[], char **envp)
 			}
 			test_parsing(token);
 			cmd = parse_tokens(token);
-			exec(cmd, &env, &token);
+			exec_system(cmd, &env, NULL);
 			add_history(input);
 			if (input)
 				free(input);
 			if (token)
 				ft_tokenlstclear(&token);
-		}
-		clear_env(&env);
-
-		return (0);
+			if (cmd)
+				free_command_chain(&cmd);
+		// return (0);
 	}
+	if (input)
+		free(input);
+	if (token)
+		ft_tokenlstclear(&token);
+	if (cmd)
+		free_command_chain(&cmd);
+	clear_env(&env);
+	return (0);
+}

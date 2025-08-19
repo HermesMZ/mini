@@ -22,6 +22,11 @@ LIBFT = \
 	is_char_token.c \
 	ft_strcmp.c \
 	ft_split.c \
+	ft_strlcpy.c \
+	ft_strlcat.c \
+	ft_strchr.c \
+	ft_strncmp.c \
+	ft_putstr_fd.c \
 
 SRC = \
 	main.c \
@@ -32,13 +37,20 @@ SRC = \
 	create_command.c \
 	free_command.c \
 	ft_lst_add_back_command.c \
-	m_exec.c \
-	m_env.c \
-	m_debug.c \
+	handler_token.c \
+	handler_token_2.c \
 	m_builtin_cd.c \
 	m_builtin_env.c \
-	m_env_utils.c \
 	m_builtin.c \
+	m_command_validation.c \
+	m_debug.c \
+	m_env_utils.c \
+	m_env.c \
+	m_error_handler.c \
+	m_exec.c \
+	m_pipeline.c \
+	m_redirect.c \
+
 
 SRC_ALL = \
 	$(addprefix $(SRC_DIR)/, $(SRC)) \
