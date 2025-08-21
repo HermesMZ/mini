@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   m_error_handler.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zoum <zoum@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 17:15:00 by mzimeris          #+#    #+#             */
-/*   Updated: 2025/08/19 18:51:04 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/20 17:32:09 by zoum             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
-
+#include "minishell.h"
 
 static void	print_command_not_found_error(const char *command)
 {

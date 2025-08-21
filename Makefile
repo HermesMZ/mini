@@ -41,15 +41,20 @@ SRC = \
 	handler_token_2.c \
 	m_builtin_cd.c \
 	m_builtin_env.c \
+	m_builtin_export.c \
 	m_builtin.c \
+	m_clean.c \
 	m_command_validation.c \
 	m_debug.c \
 	m_env_utils.c \
 	m_env.c \
 	m_error_handler.c \
 	m_exec.c \
+	m_fork.c \
 	m_pipeline.c \
 	m_redirect.c \
+	process_pre_parsing.c \
+	process_pre_parsing_bis.c \
 
 
 SRC_ALL = \

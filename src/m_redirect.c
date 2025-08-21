@@ -3,32 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   m_redirect.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zoum <zoum@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/06 11:17:55 by mzimeris          #+#    #+#             */
-/*   Updated: 2025/08/19 18:38:06 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/20 22:04:01 by zoum             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
 void	setup_input_redirect(int in_fd)
 {
-	int	null_fd;
-
 	if (in_fd > 0)
 	{
 		dup2(in_fd, STDIN_FILENO);
 		close(in_fd);
-	}
-	else if (in_fd == -1)
-	{
-		null_fd = open("/dev/null", O_RDONLY);
-		if (null_fd >= 0)
-		{
-			dup2(null_fd, STDIN_FILENO);
-			close(null_fd);
-		}
 	}
 }
 
@@ -42,20 +31,11 @@ static void	setup_pipe_output(int pipe_fd[2])
 static void	setup_file_output(char *outfile)
 {
 	int	outfile_fd;
-	int	null_fd;
 
+	if (!outfile)
+		return ;
 	outfile_fd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (outfile_fd < 0)
-	{
-		perror(outfile);
-		null_fd = open("/dev/null", O_WRONLY);
-		if (null_fd >= 0)
-		{
-			dup2(null_fd, STDOUT_FILENO);
-			close(null_fd);
-		}
-	}
-	else
+	if (outfile_fd >= 0)
 	{
 		dup2(outfile_fd, STDOUT_FILENO);
 		close(outfile_fd);

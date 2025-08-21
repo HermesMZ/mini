@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {

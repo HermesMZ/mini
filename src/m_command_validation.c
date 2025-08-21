@@ -3,31 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   m_command_validation.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zoum <zoum@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 13:13:37 by mzimeris          #+#    #+#             */
-/*   Updated: 2025/08/19 18:52:44 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:36:13 by zoum             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
-static char	*build_command_path(char *dir, char *command)
-{
-	char	*path;
-	char	*temp;
-
-	temp = ft_strjoin(dir, "/");
-	if (!temp)
-		return (NULL);
-	path = ft_strjoin(temp, command);
-	free(temp);
-	return (path);
-}
-
-int	check_system_command(t_env *env, t_command *command)
+static int	_check_in_path(char *path, t_command *command)
 {
 	char	*full_path;
+	int		result;
+	char	*temp;
+
+	temp = ft_strjoin(path, "/");
+	full_path = ft_strjoin(temp, command->cmd->string);
+	free(temp);
+	if (!full_path)
+		return (-1);
+	result = access(full_path, F_OK | X_OK);
+	if (result == 0)
+	{
+		free(command->cmd->string);
+		command->cmd->string = full_path;
+		return (0);
+	}
+	return (result);
+}
+
+static int	_check_system_command(t_env *env, t_command *command)
+{
 	int		i;
 
 	if (!env || !command || !command->cmd)
@@ -43,17 +50,8 @@ int	check_system_command(t_env *env, t_command *command)
 	i = 0;
 	while (env->path[i])
 	{
-		full_path = build_command_path(env->path[i], command->cmd->string);
-		if (full_path)
-		{
-			if (access(full_path, F_OK | X_OK) == 0)
-			{
-				free(command->cmd->string);
-				command->cmd->string = full_path;
-				return (0);
-			}
-			free(full_path);
-		}
+		if (_check_in_path(env->path[i], command) == 0)
+			return (0);
 		i++;
 	}
 	return (-1);
@@ -73,5 +71,5 @@ int	check_command(t_env *env, t_command *command)
 		|| ft_strcmp(command->cmd->string, "env") == 0
 		|| ft_strcmp(command->cmd->string, "exit") == 0)
 		return (0);
-	return (check_system_command(env, command));
+	return (_check_system_command(env, command));
 }

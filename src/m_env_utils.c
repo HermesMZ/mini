@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
 static void	del_env_node(t_env_node *node)
 {
@@ -21,30 +21,30 @@ static void	del_env_node(t_env_node *node)
 	free(node);
 }
 
-void	remove_env_node(t_env **env, t_env_node *node)
+void	remove_env_node(t_env *env, t_env_node *node)
 {
 	t_env_node	*current;
-	t_env_node	*prev_node;
+	t_env_node	*prev;
 
-	if (!env || !*env || !node)
+	if (!env || !node)
 		return ;
-	current = (*env)->env_list;
-	if (current && ft_strcmp(current->key, node->key) == 0)
+	current = env->env_list;
+	prev = NULL;
+	while (current)
 	{
-		(*env)->env_list = current->next;
-		del_env_node(current);
-		return ;
-	}
-	prev_node = NULL;
-	while (current && ft_strcmp(current->key, node->key) != 0)
-	{
-		prev_node = current;
+		if (current == node)
+		{
+			if (prev)
+				prev->next = current->next;
+			else
+				env->env_list = current->next;
+			free(current->key);
+			free(current->value);
+			free(current);
+			return ;
+		}
+		prev = current;
 		current = current->next;
-	}
-	if (current && ft_strcmp(current->key, node->key) == 0)
-	{
-		prev_node->next = current->next;
-		del_env_node(current);
 	}
 }
 

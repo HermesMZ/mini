@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/includes",
+                "/usr/include",
+                "/usr/include/readline",
+                "/usr/include/x86_64-linux-gnu",
+                "/usr/lib/gcc/x86_64-linux-gnu/*/include",
+                "/usr/local/include"
+            ],
+            "defines": [
+                "_GNU_SOURCE"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c99",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerArgs": [
+                "-Wall",
+                "-Wextra",
+                "-Werror"
+            ]
+        }
+    ],
+    "version": 4
+}

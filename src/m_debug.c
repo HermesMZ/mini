@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "m_minishell.h"
 
 void	debug_print_token(t_token *token)
 {

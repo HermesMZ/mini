@@ -10,14 +10,14 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
-static int	cd_to_home(t_env **env);
-static int	cd_to_oldpwd(t_env **env);
-static int	cd_expand_tilde(t_env **env, char *path);
-static void	update_oldpwd(t_env **env, char *old_pwd);
+static int	cd_to_home(t_env *env);
+static int	cd_to_oldpwd(t_env *env);
+static int	cd_expand_tilde(t_env *env, char *path);
+static void	update_oldpwd(t_env *env, char *old_pwd);
 
-int	handle_cd(t_env **env, t_command *command)
+int	handle_cd(t_env *env, t_command *command)
 {
 	char	*path;
 	char	pwd[PATH_MAX];
@@ -40,17 +40,16 @@ int	handle_cd(t_env **env, t_command *command)
 		else
 			result = chdir(path);
 	}
-	printf("%d\n", result);
 	if (result == 0)
 		update_oldpwd(env, pwd);
 	return (result);
 }
 
-static int	cd_to_home(t_env **env)
+static int	cd_to_home(t_env *env)
 {
 	t_env_node	*home_node;
 
-	home_node = get_env(*env, "HOME");
+	home_node = get_env(env, "HOME");
 	if (!home_node || !home_node->value)
 	{
 		printf("Minishell: cd: HOME not set\n");
@@ -59,27 +58,27 @@ static int	cd_to_home(t_env **env)
 	return (chdir(home_node->value));
 }
 
-static int	cd_to_oldpwd(t_env **env)
+static int	cd_to_oldpwd(t_env *env)
 {
 	t_env_node	*oldpwd_node;
 
-	oldpwd_node = get_env(*env, "OLDPWD");
+	oldpwd_node = get_env(env, "OLDPWD");
 	if (!oldpwd_node || !oldpwd_node->value)
 	{
 		printf("Minishell: cd: OLDPWD not set\n");
 		return (-1);
 	}
-	printf("%s=%s\n", oldpwd_node->key, oldpwd_node->value);
+	printf("%s\n", oldpwd_node->value);
 	return (chdir(oldpwd_node->value));
 }
 
-static int	cd_expand_tilde(t_env **env, char *path)
+static int	cd_expand_tilde(t_env *env, char *path)
 {
 	t_env_node	*home_node;
 	char		*full_path;
 	int			result;
 
-	home_node = get_env(*env, "HOME");
+	home_node = get_env(env, "HOME");
 	if (!home_node || !home_node->value)
 		return (-1);
 	full_path = ft_strjoin(home_node->value, path + 1);
@@ -90,15 +89,14 @@ static int	cd_expand_tilde(t_env **env, char *path)
 	return (result);
 }
 
-static void	update_oldpwd(t_env **env, char *old_pwd)
+static void	update_oldpwd(t_env *env, char *old_pwd)
 {
 	t_env_node	*oldpwd_node;
 	char		*new_value;
 
-	if (!env || !*env || !old_pwd)
+	if (!env || !old_pwd)
 		return ;
-
-	oldpwd_node = get_env(*env, "OLDPWD");
+	oldpwd_node = get_env(env, "OLDPWD");
 	if (oldpwd_node)
 	{
 		new_value = ft_strdup(old_pwd, ft_strlen(old_pwd), 0);

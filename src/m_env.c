@@ -3,16 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   m_env.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mzimeris <mzimeris@student.42.fr>          +#+  +:+       +#+        */
+/*   By: zoum <zoum@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/13 11:30:09 by mzimeris          #+#    #+#             */
-/*   Updated: 2025/08/19 16:10:26 by mzimeris         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:19:29 by zoum             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
-t_env_node	*create_env_node_only(char *key, char *value)
+void	add_env_node(t_env *env, t_env_node *new_node)
+{
+	t_env_node	*last;
+
+	if (!env || !new_node)
+		return ;
+	if (env->env_list == NULL)
+	{
+		env->env_list = new_node;
+		return ;
+	}
+	last = env->env_list;
+	while (last->next)
+		last = last->next;
+	last->next = new_node;
+}
+
+t_env_node	*create_env_node(t_env *env, char *key, char *value)
 {
 	t_env_node	*new_node;
 
@@ -27,36 +44,12 @@ t_env_node	*create_env_node_only(char *key, char *value)
 	else
 		new_node->value = NULL;
 	new_node->next = NULL;
+	if (new_node)
+		add_env_node(env, new_node);
 	return (new_node);
 }
 
-void	create_env_node(t_env **env, char *key, char *value)
-{
-	t_env_node	*new_node;
-
-	new_node = create_env_node_only(key, value);
-	if (new_node)
-		add_env_node(env, new_node);
-}
-
-void	add_env_node(t_env **env, t_env_node *new_node)
-{
-	t_env_node	*last;
-
-	if (!env || !new_node || !*env)
-		return ;
-	if ((*env)->env_list == NULL)
-	{
-		(*env)->env_list = new_node;
-		return ;
-	}
-	last = (*env)->env_list;
-	while (last->next)
-		last = last->next;
-	last->next = new_node;
-}
-
-static t_env_node	*extract_env_node(char *line)
+static t_env_node	*_extract_env_node(t_env *env, char *line)
 {
 	char		**kval;
 	t_env_node	*node;
@@ -68,51 +61,31 @@ static t_env_node	*extract_env_node(char *line)
 			free_splitted(kval);
 		return (NULL);
 	}
-	node = create_env_node_only(kval[0], kval[1]);
+	node = create_env_node(env, kval[0], kval[1]);
 	free_splitted(kval);
 	return (node);
 }
 
-t_env	*extract_env(char **envp, t_env **env)
+t_env	*extract_env(char **envp)
 {
 	char		*line;
 	t_env		*new_env;
 	t_env_node	*node;
-	t_env_node	*last;
 
 	if (!envp || !*envp)
 		return (NULL);
 	new_env = malloc(sizeof(t_env));
 	if (!new_env)
 		return (NULL);
-	new_env->path = NULL;
-	new_env->env_list = NULL;
-	new_env->envp = envp;
+	*new_env = (t_env){0};
 	while (*envp)
 	{
 		line = ft_strdup(*envp, ft_strlen(*envp), 0);
-		node = extract_env_node(line);
-		if (node)
-		{
-			if (new_env->env_list == NULL)
-				new_env->env_list = node;
-			else
-			{
-				last = new_env->env_list;
-				while (last->next)
-					last = last->next;
-				last->next = node;
-			}
-			if (ft_strcmp(node->key, "PATH") == 0 && node->value)
-				new_env->path = ft_split(node->value, ':');
-		}
+		node = _extract_env_node(new_env, line);
+		if (node && ft_strcmp(node->key, "PATH") == 0 && node->value)
+			new_env->path = ft_split(node->value, ':');
 		free(line);
 		envp++;
 	}
-	*env = new_env;
 	return (new_env);
 }
-
-
-
-

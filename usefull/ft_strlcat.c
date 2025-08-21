@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "m_minishell.h"
+#include "minishell.h"
 
 size_t	ft_strlcat(char *dst, const char *src, size_t dsize)
 {

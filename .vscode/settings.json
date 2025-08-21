@@ -1,0 +1,19 @@
+{
+	"files.associations": {
+		"stdlib.h": "c",
+		"unistd.h": "c",
+		"minishell.h": "c",
+		"m_minishell.h": "c",
+		"*.h": "c",
+		"*.c": "c"
+	},
+	"C_Cpp.errorSquiggles": "enabled",
+	"C_Cpp.intelliSenseEngine": "default",
+	"C_Cpp.intelliSenseEngineFallback": "Enabled",
+	"C_Cpp.default.browse.limitSymbolsToIncludedHeaders": true,
+	"C_Cpp.default.systemIncludePath": [
+		"/usr/include",
+		"/usr/include/readline",
+		"/usr/include/x86_64-linux-gnu"
+	]
+}
